@@ -7,19 +7,22 @@ import (
 )
 
 func main() {
-	//TODO разобарться с make и new
-	//TODO разобраться с cap и len,
-	//TODO разобраться как создать слайс не указывая его длину и заполнить его (можно использовать аппенд, но тогда нужно возвращать массив, а нужно понять как менять исходный)
-	//TODO разобраться как написать метод fillHaystack используя ресивер
 	
-	max := 10
+	var max int 
+	fmt.Println("Enter max haystack size...")
+	fmt.Scanf("%d\n", &max)
+
+	var needle int 
+	fmt.Println("Enter needle...")
+	fmt.Scanf("%d\n", &needle)
+
 	haystack := make([]int, max)
 	fillHaystack(haystack, max)
-	test,err := binary_search(7, haystack)
+	key,err := binary_search(needle, haystack)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%d\n", test)
+	fmt.Printf("needle key: %d\n", key)
 }
 
 func fillHaystack(haystack []int, max int) {
@@ -29,18 +32,18 @@ func fillHaystack(haystack []int, max int) {
 }
 
 func binary_search(needle int, haystack[]int) (int, error){
-	
-	for len(haystack) > 1 {
-		fmt.Printf("len: %d\n", len(haystack))
-		maxIndex := len(haystack) - 1 
-		midIndex := len(haystack) / 2
+	minIndex := 0
+	maxIndex := len(haystack) - 1 	
+
+	for minIndex <= maxIndex {
+		midIndex := (minIndex + maxIndex) / 2
 		if haystack[midIndex] == needle {
 			return midIndex, nil
-		} else if haystack[midIndex] > needle{
-			haystack = haystack[0:midIndex]
+		} else if haystack[midIndex] > needle {
+			maxIndex = midIndex - 1
 		} else {
-			haystack = haystack[midIndex:maxIndex]
-		}
+			minIndex = midIndex + 1
+		}		
 	}
 
 	return -1, errors.New("number not found")
