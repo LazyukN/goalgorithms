@@ -16,8 +16,9 @@ func main() {
 	fmt.Println("Enter needle...")
 	fmt.Scanf("%d\n", &needle)
 
-	haystack := make([]int, max)
-	fillHaystack(haystack, max)
+	// haystack := make([]int, max)
+	var haystack []int
+	fillHaystack(&haystack, max)
 	key,err := binary_search(needle, haystack)
 	if err != nil {
 		log.Fatal(err)
@@ -25,9 +26,9 @@ func main() {
 	fmt.Printf("needle key: %d\n", key)
 }
 
-func fillHaystack(haystack []int, max int) {
+func fillHaystack(haystack *[]int, max int) {
 	for i := 0; i < max; i++ {
-		haystack[i] = i+1
+		*haystack = append(*haystack, i+1)
 	}
 }
 
