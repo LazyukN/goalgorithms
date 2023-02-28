@@ -1,9 +1,7 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"log"
 )
 
 func main() {
@@ -16,31 +14,33 @@ func main() {
 	fmt.Println("Enter needle...")
 	fmt.Scanf("%d\n", &needle)
 
-	// haystack := make([]int, max)
 	var haystack []int
-	fillHaystack(&haystack, max)
+	FillHaystack(&haystack, max)
 	fmt.Println(haystack)
-	key, err := binary_search(needle, haystack)
-	if err != nil {
-		log.Fatal(err)
-	}
+	key := BinarySearch(needle, haystack)
+
+	fmt.Println("binary search:")
+	fmt.Printf("needle key: %d\n", key)
+
+	key = StupidSearch(needle, haystack)
+	fmt.Println("stupid search:")
 	fmt.Printf("needle key: %d\n", key)
 }
 
-func fillHaystack(haystack *[]int, max int) {
+func FillHaystack(haystack *[]int, max int) {
 	for i := 0; i < max; i++ {
 		*haystack = append(*haystack, i+1)
 	}
 }
 
-func binary_search(needle int, haystack []int) (int, error) {
+func BinarySearch(needle int, haystack []int) int {
 	minIndex := 0
 	maxIndex := len(haystack) - 1
 
 	for minIndex <= maxIndex {
 		midIndex := (minIndex + maxIndex) / 2
 		if haystack[midIndex] == needle {
-			return midIndex, nil
+			return midIndex
 		} else if haystack[midIndex] > needle {
 			maxIndex = midIndex - 1
 		} else {
@@ -48,5 +48,16 @@ func binary_search(needle int, haystack []int) (int, error) {
 		}
 	}
 
-	return -1, errors.New("number not found")
+	return -1
+}
+
+func StupidSearch(needle int, haystack []int) int {
+
+	for key, val := range haystack {
+		if val == needle {
+			return key
+		}
+	}
+
+	return -1
 }
