@@ -22,12 +22,12 @@ func main() {
 		"end": map[string]float64{},
 	}
 
-	weightToEnd, _ := findMinimumPath(graph, "start", "end")
-	fmt.Println(weightToEnd)
+	path, weightToEnd, _ := findMinimumPath(graph, "start", "end")
+	fmt.Println(path, weightToEnd)
 
 }
 
-func findMinimumPath(graph map[string]map[string]float64, startKey string, endKey string) (float64, error) {
+func findMinimumPath(graph map[string]map[string]float64, startKey string, endKey string) ([]string, float64, error) {
 	weights := make(map[string]float64)
 	parents := make(map[string]string)
 	visited := make(map[string]bool)
@@ -35,17 +35,18 @@ func findMinimumPath(graph map[string]map[string]float64, startKey string, endKe
 	if startNode, ok := graph[startKey]; ok {
 		for key, weight := range startNode {
 			weights[key] = weight
-			parents[startKey] = key
+			parents[key] = startKey
 		}
 	} else {
-		//TODO return error
-		return 0, errors.New("start not found")
+		return make([]string, 0), 0, errors.New("start not found")
 	}
 
 	if toEndWeight, ok := graph[startKey][endKey]; ok {
 		weights[endKey] = toEndWeight
+		parents[endKey] = startKey
 	} else {
 		weights[endKey] = math.Inf(1)
+		parents[endKey] = ""
 	}
 
 	lowWeightNodeKey := findLowWeightNodeKey(weights, visited)
@@ -57,9 +58,11 @@ func findMinimumPath(graph map[string]map[string]float64, startKey string, endKe
 			if existDistance, ok := weights[key]; ok {
 				if newDistance < existDistance {
 					weights[key] = newDistance
+					parents[key] = lowWeightNodeKey
 				}
 			} else {
 				weights[key] = newDistance
+				parents[key] = lowWeightNodeKey
 			}
 		}
 		visited[lowWeightNodeKey] = true
@@ -67,7 +70,16 @@ func findMinimumPath(graph map[string]map[string]float64, startKey string, endKe
 		lowWeightNodeKey = findLowWeightNodeKey(weights, visited)
 	}
 
-	return weights[endKey], nil
+	var minPath []string
+	minPath = append(minPath, endKey)
+	for i := endKey; i != startKey; {
+		parent := parents[i]
+		minPath = append(minPath, parent)
+		i = parent
+	}
+	reverseSlice(minPath)
+
+	return minPath, weights[endKey], nil
 
 }
 
@@ -85,4 +97,10 @@ func findLowWeightNodeKey(weights map[string]float64, visited map[string]bool) s
 		}
 	}
 	return minWeightNodeKey
+}
+
+func reverseSlice(s []string) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
 }
