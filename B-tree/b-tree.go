@@ -56,7 +56,6 @@ func (n *TreeNode) Delete(item int) bool {
 				rightNode = mostLeftNode.left
 				mostLeftNode = rightNode.left
 			}
-			//n.parent.left = nil
 			newItem := rightNode.item
 			n.Delete(rightNode.item)
 			n.item = newItem
@@ -125,6 +124,22 @@ func (n *TreeNode) Find(item int) (TreeNode, bool) {
 	}
 }
 
+func (n *TreeNode) Max() int {
+	if n.right != nil {
+		return n.right.Max()
+	}
+
+	return n.item
+}
+
+func (n *TreeNode) Min() int {
+	if n.left != nil {
+		return n.left.Min()
+	}
+
+	return n.item
+}
+
 func main() {
 	test := []int{3, 15, 16, 7, 8, 4, 5, 2}
 	node := TreeNode{
@@ -133,9 +148,12 @@ func main() {
 	for _, val := range test {
 		node.Insert(val)
 	}
-	deleted := node.Delete(2)
+	node.Delete(16)
+	node.Delete(3)
+	node.Delete(2)
+	sorted := node.Traverse()
 
-	fmt.Println(deleted)
-	test2 := node.Traverse()
-	fmt.Println(test2)
+	fmt.Println(sorted)
+	fmt.Println(node.Max())
+	fmt.Println(node.Min())
 }
