@@ -43,8 +43,55 @@ func (n *TreeNode) Insert(item int) bool {
 	return true
 }
 
-func (n *TreeNode) Delete() {
-	//TODO
+func (n *TreeNode) Delete(item int) bool {
+	if n.item == item {
+		if n.left != nil && n.right != nil {
+			rightNode := n.right
+			mostLeftNode := rightNode.left
+			for mostLeftNode != nil {
+				if mostLeftNode.left == nil {
+					rightNode = mostLeftNode
+					break
+				}
+				rightNode = mostLeftNode.left
+				mostLeftNode = rightNode.left
+			}
+			//n.parent.left = nil
+			newItem := rightNode.item
+			n.Delete(rightNode.item)
+			n.item = newItem
+			return true
+		} else if n.left != nil {
+			n.item = n.left.item
+			n.left = nil
+			return true
+		} else if n.right != nil {
+			n.item = n.right.item
+			n.right = nil
+		} else {
+			if n.parent != nil {
+				if n.parent.left == n {
+					n.parent.left = nil
+				}
+				if n.parent.right == n {
+					n.parent.right = nil
+				}
+			} else {
+				emptyNode := TreeNode{}
+				n.item = emptyNode.item
+			}
+		}
+	} else if n.item > item {
+		if n.left != nil {
+			return n.left.Delete(item)
+		}
+	} else {
+		if n.right != nil {
+			return n.right.Delete(item)
+		}
+	}
+
+	return false
 }
 
 func (n *TreeNode) Traverse() []int {
@@ -79,14 +126,16 @@ func (n *TreeNode) Find(item int) (TreeNode, bool) {
 }
 
 func main() {
-	test := []int{3, 15, 16, 7, 8, 4, 5, 2, 7, 7}
+	test := []int{3, 15, 16, 7, 8, 4, 5, 2}
 	node := TreeNode{
 		item: 12,
 	}
 	for _, val := range test {
 		node.Insert(val)
 	}
+	deleted := node.Delete(2)
 
+	fmt.Println(deleted)
 	test2 := node.Traverse()
 	fmt.Println(test2)
 }
